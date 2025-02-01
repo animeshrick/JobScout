@@ -1,16 +1,17 @@
-from typing import Optional
+from typing import Optional, List
 
+from _decimal import Decimal
 from pydantic import BaseModel
 
 
 class AddJobRequestType(BaseModel):
     title: str
-    salary: str
-    company_name: str
-    location: str
-    skills: str
+    salary: Decimal
+    company: str
+    locations: List[str]
+    skills: List[str]
 
-    applied_candidates: Optional[str] = None
+    # status: Optional[str] = None
     experience: Optional[str] = None
     notice_period: Optional[str] = None
     vacancy: Optional[str] = None

@@ -7,10 +7,11 @@ from users.export_types.request_data_types.sign_in import SignInRequestType
 from users.models.user_models.abstract_user import AbstractUser
 from users.services.encryption_services.encryption_service import EncryptionServices
 from users.services.token_services.token_generator import TokenGenerator
+from django.db import models
 
 
 class User(AbstractUser):
-    # friends = models.ManyToManyField("self", symmetrical=False, blank=True)
+    applied_company = models.ManyToManyField("self", symmetrical=False, blank=True)
     # balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __init__(self, *args, **kwargs):

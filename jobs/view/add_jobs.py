@@ -23,11 +23,7 @@ class AddJobView(APIView):
                 )
                 return Response(
                     data={
-                        "message": (
-                            result.get("message")
-                            if result.get("message")
-                            else "Friend request accepted"
-                        ),
+                        "message": (result.get("message")),
                     },
                     status=status.HTTP_200_OK,
                     content_type="application/json",

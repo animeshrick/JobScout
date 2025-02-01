@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         fname = data.get("fname")
         lname = data.get("lname")
         password = data.get("password")
+        role = data.get("role")
 
         # Email Validation
         if email and email != "" and isinstance(email, str):
@@ -58,20 +59,26 @@ class UserSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError(detail="Password should not be empty.")
 
+        # user role validations
+        if role and role.lower() not in ["seeker", "recruiter"]:
+            raise serializers.ValidationError(
+                detail="Invalid role. Allowed roles: seeker, recruiter."
+            )
+
         if is_validated_email and is_validated_password and is_validated_name:
             return True
 
     def create(self, data: dict) -> User:
-        email = data.get("email")
-        fname = data.get("fname")
-        lname = data.get("lname")
-        password = data.get("password")
+        role = data.get("role")
+        role = role if role else "seeker"
+
         if self.validate(data):
             user = User(
-                email=email,
-                fname=fname,
-                lname=lname,
-                password=EncryptionServices().encrypt(password),
+                email=data.get("email"),
+                fname=data.get("fname"),
+                lname=data.get("lname"),
+                password=EncryptionServices().encrypt(data.get("password")),
+                role=role,
             )
             user.save()
             return user

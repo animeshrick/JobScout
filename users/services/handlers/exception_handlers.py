@@ -7,6 +7,11 @@ from rest_framework import status, serializers
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError
 
+from jobs.job_exceptions.job_exceptions import (
+    JobNotCreatedError,
+    AlreadyCreatedJobError,
+    JobNotFoundError,
+)
 from users.auth_exceptions.user_exceptions import (
     UserNotFoundError,
     UserAlreadyVerifiedError,
@@ -67,6 +72,18 @@ class ExceptionHandler:
                 "message": "PasswordNotMatchError",
                 "status": status.HTTP_400_BAD_REQUEST,
             },
+            JobNotCreatedError: {
+                "message": "JobNotCreatedError",
+                "status": status.HTTP_400_BAD_REQUEST,
+            },
+            AlreadyCreatedJobError: {
+                "message": "AlreadyCreatedJobError",
+                "status": status.HTTP_400_BAD_REQUEST,
+            },
+            JobNotFoundError: {
+                "message": "JobNotFoundError",
+                "status": status.HTTP_400_BAD_REQUEST,
+            },
             ValueError: {
                 "message": "ValueError",
                 "status": status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -83,10 +100,10 @@ class ExceptionHandler:
                 "message": "ValidationError",
                 "status": status.HTTP_400_BAD_REQUEST,
             },
-            # ConnectionRefusedError: {
-            #     "message": "ConnectionRefusedError",
-            #     "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-            # },
+            ConnectionRefusedError: {
+                "message": "ConnectionRefusedError",
+                "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+            },
             # Exception: {
             #     "message": "InternalServerError",
             #     "status": status.HTTP_500_INTERNAL_SERVER_ERROR,

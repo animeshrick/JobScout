@@ -1,10 +1,10 @@
 import logging
 from typing import Optional
 
-from users.auth_exceptions.base_exception import BaseException
+from users.auth_exceptions.base_exception import JobScoutBaseException
 
 
-class UserNotFoundError(BaseException):
+class UserNotFoundError(JobScoutBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
             self.msg = "This user is not registered. Please register as new user."
@@ -13,7 +13,7 @@ class UserNotFoundError(BaseException):
         logging.error(self.msg)
 
 
-class UserAlreadyVerifiedError(BaseException):
+class UserAlreadyVerifiedError(JobScoutBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
             self.msg = "This user is already verified."
@@ -22,7 +22,7 @@ class UserAlreadyVerifiedError(BaseException):
         logging.error(self.msg)
 
 
-class UserNotVerifiedError(BaseException):
+class UserNotVerifiedError(JobScoutBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
             self.msg = "This user is not verified. Please verify your email first."
@@ -31,7 +31,7 @@ class UserNotVerifiedError(BaseException):
         logging.error(self.msg)
 
 
-class EmailNotSentError(BaseException):
+class EmailNotSentError(JobScoutBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
             self.msg = "Verification Email could not be sent."
@@ -40,7 +40,7 @@ class EmailNotSentError(BaseException):
         logging.error(self.msg)
 
 
-class OTPNotVerifiedError(BaseException):
+class OTPNotVerifiedError(JobScoutBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
             self.msg = "OTP did not match."
@@ -49,7 +49,7 @@ class OTPNotVerifiedError(BaseException):
         logging.error(self.msg)
 
 
-class UserAuthenticationFailedError(BaseException):
+class UserAuthenticationFailedError(JobScoutBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
             self.msg = "Password is invalid."
@@ -58,7 +58,7 @@ class UserAuthenticationFailedError(BaseException):
         logging.error(self.msg)
 
 
-class UserNotAuthenticatedError(BaseException):
+class UserNotAuthenticatedError(JobScoutBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
             self.msg = "The user is not authenticated, please re-login."
@@ -67,7 +67,7 @@ class UserNotAuthenticatedError(BaseException):
         logging.error(self.msg)
 
 
-class PasswordNotMatchError(BaseException):
+class PasswordNotMatchError(JobScoutBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
             self.msg = "Password1 and Password2 do not match."

@@ -3,12 +3,17 @@ import re
 from datetime import datetime
 
 import uuid
+
+from django.core.exceptions import ObjectDoesNotExist
 from dotenv import load_dotenv
 from rest_framework_simplejwt.tokens import AccessToken
 
 from dateutil.parser import parse
 
-from users.auth_exceptions.user_exceptions import UserNotAuthenticatedError
+from users.auth_exceptions.user_exceptions import (
+    UserNotAuthenticatedError,
+    UserNotFoundError,
+)
 from users.export_types.validation_types.validation_result import ValidationResult
 from users.models.user_models.user import User
 from users.services.definitions import EnvironmentSettings
@@ -64,6 +69,20 @@ def validate_user_uid(uid: str) -> ValidationResult:
     return ValidationResult(is_validated=False, error="User does not exists.")
 
 
+def validate_recruiter(uid: str) -> ValidationResult:
+    try:
+        if validate_user_uid(uid).is_validated:
+            if User.objects.get(id=uid).get_is_recruiter:
+                return ValidationResult(is_validated=True, error=None)
+            else:
+                return ValidationResult(
+                    is_validated=False, error="User is not a recruiter."
+                )
+        return ValidationResult(is_validated=False, error="User does not exists.")
+    except ObjectDoesNotExist:
+        raise UserNotFoundError()
+
+
 def is_valid_uuid(value: str) -> bool:
     try:
         uuid_obj = uuid.UUID(value, version=4)
@@ -87,6 +106,15 @@ def validate_name(name: str) -> ValidationResult:
         return ValidationResult(
             is_validated=False, error="First name or Last name can only have alphabets"
         )
+
+
+def validate_role(role: str):
+    """Validate that role is either 'seeker' or 'recruiter'"""
+    if role.lower() not in ["seeker", "recruiter"]:
+        raise ValidationResult(is_validated=True, error=None)
+    return ValidationResult(
+        is_validated=False, error="Invalid role. Allowed roles: seeker, recruiter."
+    )
 
 
 def validate_username(username: str) -> ValidationResult:

@@ -59,7 +59,7 @@ class AbstractUser(GenericBaseModel):
 
     @property
     def get_is_recruiter(self):
-        return self.is_recruiter
+        return self.role == "recruiter"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

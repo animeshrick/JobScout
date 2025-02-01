@@ -1,10 +1,11 @@
-from __future__ import annotations
 import datetime
 import typing
 from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
+
+ROLE_CHOICES = typing.Literal["seeker", "recruiter"]
 
 
 class ExportUser(BaseModel):
@@ -16,7 +17,9 @@ class ExportUser(BaseModel):
     phone: Optional[str]
     image: Optional[str]
     is_active: bool
-    is_friend: Optional[bool] = None
+    role: ROLE_CHOICES
+    resume: Optional[str]
+    is_recruiter: Optional[bool] = None
     is_requested: Optional[bool] = None
     is_request_received: Optional[bool] = None
     created_at: datetime.datetime
