@@ -14,7 +14,7 @@ class AddJobRequestType(BaseModel):
     # status: Optional[str] = None
     experience: Optional[str] = None
     notice_period: Optional[str] = None
-    vacancy: Optional[str] = None
+    vacancy: Optional[int] = None
     good_to_have: Optional[str] = None
     industry_type: Optional[str] = None
     employment_type: Optional[str] = None

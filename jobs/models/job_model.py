@@ -3,6 +3,8 @@ from django.db import models
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from users.models.user_models.user import User
+
 
 class Job(GenericBaseModel):
     JOB_STATUS = (
@@ -26,9 +28,11 @@ class Job(GenericBaseModel):
     industry_type = models.CharField(max_length=255, null=True, blank=True)
     employment_type = models.CharField(max_length=255, null=True, blank=True)
     department = models.CharField(max_length=255, null=True, blank=True)
+    posted_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="posted_by", null=True, blank=True
+    )
 
     description = models.TextField()
-    # posted_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="jobs")
 
     status = models.CharField(
         max_length=10, choices=JOB_STATUS, default="start", null=False, blank=False
