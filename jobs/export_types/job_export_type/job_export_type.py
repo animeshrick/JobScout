@@ -1,6 +1,5 @@
 import datetime
 import typing
-from typing import TYPE_CHECKING
 from typing import Optional
 from uuid import UUID
 
@@ -9,13 +8,10 @@ from pydantic import BaseModel
 
 from users.export_types.user_types.posted_by_user import PostedByUser
 
-if TYPE_CHECKING:
-    from users.export_types.user_types.export_user import ExportUser
-
 
 class ExportJob(BaseModel):
     id: Optional[UUID]
-    posted_by: Optional[PostedByUser]
+    posted_by: Optional[PostedByUser] = None
     title: str
     company: str
     salary: Decimal
@@ -35,10 +31,14 @@ class ExportJob(BaseModel):
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
-    def __init__(self, with_id: bool = True, **kwargs):
+    def __init__(self, with_id: bool = True, with_posted_by: bool = True, **kwargs):
 
         if "posted_by" in kwargs:
-            kwargs["posted_by"] = PostedByUser(**kwargs["posted_by"].model_to_dict())
+            kwargs["posted_by"] = (
+                PostedByUser(**kwargs["posted_by"].model_to_dict())
+                if with_posted_by
+                else None
+            )
         if not with_id:
             kwargs["id"] = None
         super().__init__(**kwargs)

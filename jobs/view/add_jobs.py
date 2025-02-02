@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 
 from jobs.job_services.job_services import JobServices
-from jobs.export_types.request_type.add_job_reuest_type import AddUpdateJobRequestType
+from jobs.export_types.request_type.add_job_request_type import AddobRequestType
 from users.services.handlers.exception_handlers import ExceptionHandler
 from users.services.helpers import decode_jwt_token, validate_user_uid
 
@@ -19,7 +19,7 @@ class AddJobView(APIView):
             user_id = decode_jwt_token(request=request)
             if validate_user_uid(uid=user_id).is_validated:
                 result = JobServices.add_job_service(
-                    request_data=AddUpdateJobRequestType(**request.data), uid=user_id
+                    request_data=AddobRequestType(**request.data), uid=user_id
                 )
                 return Response(
                     data={

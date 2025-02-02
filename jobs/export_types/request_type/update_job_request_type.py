@@ -4,12 +4,11 @@ from _decimal import Decimal
 from pydantic import BaseModel
 
 
-class AddUpdateJobRequestType(BaseModel):
-    title: str
-    salary: Decimal
-    company: str
-    locations: List[str]
-    skills: List[str]
+class UpdateJobRequestType(BaseModel):
+    job_id: str
+    salary: Optional[Decimal] = None
+    locations: Optional[List[str]] = None
+    skills: Optional[List[str]] = None
 
     # status: Optional[str] = None
     experience: Optional[str] = None

@@ -3,16 +3,20 @@ from typing import Optional
 from psycopg2 import DatabaseError
 
 from jobs.export_types.job_export_type.job_export_type import ExportJob, ExportJobList
-from jobs.job_exceptions.job_exceptions import JobNotCreatedError, JobNotFoundError
+from jobs.export_types.request_type.update_job_request_type import UpdateJobRequestType
+from jobs.job_exceptions.job_exceptions import (
+    JobNotCreatedError,
+    JobNotFoundError,
+    JobPermissionError,
+)
 from jobs.models.job_model import Job
-from jobs.export_types.request_type.add_job_reuest_type import AddUpdateJobRequestType
+from jobs.export_types.request_type.add_job_request_type import AddobRequestType
 from jobs.serializers.job_serializer import JobSerializer
-from users.export_types.user_types.export_user import ExportUser
 
 
 class JobServices:
     @staticmethod
-    def add_job_service(request_data: AddUpdateJobRequestType, uid: str) -> dict:
+    def add_job_service(request_data: AddobRequestType, uid: str) -> dict:
         data = {
             "request_data": request_data.model_dump(),
             "uid": uid,
@@ -31,29 +35,22 @@ class JobServices:
             raise DatabaseError()
         if jobs:
             all_jobs = ExportJobList(
-                jobs=[
-                    ExportJob(**job.model_to_dict())
-                    for job in jobs
-                ]
+                jobs=[ExportJob(**job.model_to_dict()) for job in jobs]
             )
             return all_jobs.model_dump().get("jobs")
         else:
             return None
 
     @staticmethod
-    def update_job(uid: str, request_data: AddUpdateJobRequestType) -> ExportJob:
+    def update_job(uid: str, request_data: UpdateJobRequestType) -> ExportJob:
         try:
-            job = Job.objects.get(id=uid)
+            job = Job.objects.get(id=request_data.job_id)
         except Exception:
             raise JobNotFoundError()
 
-        if (
-            request_data.title
-            and isinstance(request_data.title, str)
-            and request_data.title != ""
-            and request_data.title != job.title
-        ):
-            job.title = request_data.title
+        # check job owns by the user
+        if str(job.posted_by.id) != uid:
+            raise JobPermissionError()
 
         if (
             request_data.locations

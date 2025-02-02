@@ -22,6 +22,15 @@ class AlreadyCreatedJobError(JobScoutBaseException):
         logging.error(self.msg)
 
 
+class JobPermissionError(JobScoutBaseException):
+    def __init__(self, msg: Optional[str] = None):
+        if not msg:
+            self.msg = "You have no permission to update this job."
+        else:
+            super().__init__(msg)
+        logging.error(self.msg)
+
+
 class JobNotFoundError(JobScoutBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:

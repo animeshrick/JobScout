@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 
-from jobs.export_types.request_type.add_job_reuest_type import AddUpdateJobRequestType
+from jobs.export_types.request_type.update_job_request_type import UpdateJobRequestType
 from jobs.job_services.job_services import JobServices
 
 from users.services.handlers.exception_handlers import ExceptionHandler
@@ -20,7 +20,7 @@ class UpdateJobView(APIView):
             if validate_user_uid(uid=user_id).is_validated:
                 user = JobServices().update_job(
                     uid=user_id,
-                    request_data=AddUpdateJobRequestType(**request.data),
+                    request_data=UpdateJobRequestType(**request.data),
                 )
                 return Response(
                     data={

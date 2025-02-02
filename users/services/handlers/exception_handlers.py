@@ -11,6 +11,7 @@ from jobs.job_exceptions.job_exceptions import (
     JobNotCreatedError,
     AlreadyCreatedJobError,
     JobNotFoundError,
+    JobPermissionError,
 )
 from users.auth_exceptions.user_exceptions import (
     UserNotFoundError,
@@ -81,6 +82,10 @@ class ExceptionHandler:
                 "status": status.HTTP_400_BAD_REQUEST,
             },
             JobNotFoundError: {
+                "message": "JobNotFoundError",
+                "status": status.HTTP_400_BAD_REQUEST,
+            },
+            JobPermissionError: {
                 "message": "JobNotFoundError",
                 "status": status.HTTP_400_BAD_REQUEST,
             },

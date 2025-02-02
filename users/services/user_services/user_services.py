@@ -226,8 +226,14 @@ class UserServices:
     def get_user_details(uid: str) -> ExportUser:
         user = User.objects.get(id=uid)
 
-        created_jobs = [ExportJob(**job.model_to_dict()) for job in get_created_jobs(user)]
-        applied_jobs = [ExportJob(**job.model_to_dict()) for job in get_applied_jobs(user)]
+        created_jobs = [
+            ExportJob(**job.model_to_dict(), with_posted_by=False)
+            for job in get_created_jobs(user)
+        ]
+        applied_jobs = [
+            ExportJob(**job.model_to_dict(), with_posted_by=False)
+            for job in get_applied_jobs(user)
+        ]
 
         user_data = user.model_to_dict()
         user_data.update(
