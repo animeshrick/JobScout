@@ -11,15 +11,15 @@ class AllJobsView(APIView):
     renderer_classes = [JSONRenderer]
 
     def get(self, _):
-        try:
-            all_job: list = JobServices.get_all_jobs_service()
-            return Response(
-                data={
-                    "data": all_job if all_job is not None else [],
-                    "message": "All jobs fetched successfully",
-                },
-                status=status.HTTP_200_OK,
-                content_type="application/json",
-            )
-        except Exception as e:
-            return ExceptionHandler().handle_exception(e)
+        # try:
+        all_job: list = JobServices.get_all_jobs_service()
+        return Response(
+            data={
+                "data": all_job if all_job is not None else [],
+                "message": "All jobs fetched successfully",
+            },
+            status=status.HTTP_200_OK,
+            content_type="application/json",
+        )
+        # except Exception as e:
+        #     return ExceptionHandler().handle_exception(e)

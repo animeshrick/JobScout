@@ -32,14 +32,7 @@ class JobServices:
         if jobs:
             all_jobs = ExportJobList(
                 jobs=[
-                    ExportJob(
-                        **{
-                            **job.model_to_dict(),
-                            "posted_by": ExportUser(
-                                **job.posted_by.model_to_dict()
-                            ),  # Convert `posted_by`
-                        }
-                    )
+                    ExportJob(**job.model_to_dict())
                     for job in jobs
                 ]
             )

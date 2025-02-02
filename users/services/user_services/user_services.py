@@ -25,6 +25,7 @@ from users.export_types.request_data_types.update_user_profile import (
 from users.export_types.request_data_types.verify_otp import VerifyOTPRequestType
 from users.export_types.user_types.export_user import ExportUserList, ExportUser
 from users.export_types.request_data_types.search_user import SearchUserRequestType
+from users.export_types.user_types.posted_by_user import PostedByUser
 from users.models.user_models.user import User
 from users.serializers.user_serializer import UserSerializer
 from users.services.definitions import DEFAULT_VERIFICATION_MESSAGE
@@ -225,30 +226,8 @@ class UserServices:
     def get_user_details(uid: str) -> ExportUser:
         user = User.objects.get(id=uid)
 
-        # created_jobs = [ExportJob(**job.__dict__) for job in get_created_jobs(user)]
-        # applied_jobs = [ExportJob(**job.__dict__) for job in get_applied_jobs(user)]
-
-        created_jobs = []
-        for job in get_created_jobs(user):
-            # Ensure the 'posted_by' field is properly populated with ExportUser
-            job_data = job.__dict__
-            job_data["posted_by"] = (
-                ExportUser(**job_data["posted_by"].__dict__)
-                if job_data.get("posted_by")
-                else None
-            )
-            created_jobs.append(ExportJob(**job_data))
-
-        applied_jobs = []
-        for job in get_applied_jobs(user):
-            # Same for applied jobs
-            job_data = job.__dict__
-            job_data["posted_by"] = (
-                ExportUser(**job_data["posted_by"].__dict__)
-                if job_data.get("posted_by")
-                else None
-            )
-            applied_jobs.append(ExportJob(**job_data))
+        created_jobs = [ExportJob(**job.model_to_dict()) for job in get_created_jobs(user)]
+        applied_jobs = [ExportJob(**job.model_to_dict()) for job in get_applied_jobs(user)]
 
         user_data = user.model_to_dict()
         user_data.update(
@@ -259,7 +238,7 @@ class UserServices:
         )
 
         user_data["posted_by"] = (
-            ExportUser(**user_data["posted_by"].__dict__)
+            PostedByUser(**user_data["posted_by"].__dict__)
             if user_data.get("posted_by")
             else None
         )
