@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from jobs.export_types.job_export_type.job_export_type import ExportJob
+
 ROLE_CHOICES = typing.Literal["seeker", "recruiter"]
 
 
@@ -24,6 +26,9 @@ class ExportUser(BaseModel):
     is_request_received: Optional[bool] = None
     created_at: datetime.datetime
     updated_at: datetime.datetime
+
+    applied_jobs: Optional[typing.List[ExportJob]] = []
+    created_jobs: Optional[typing.List[ExportJob]] = []
 
     def __init__(self, with_id: bool = True, **kwargs):
         if not with_id:

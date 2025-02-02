@@ -1,9 +1,12 @@
 import os
 from typing import Optional
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from dotenv import load_dotenv
 from psycopg2 import DatabaseError
 
+from jobs.export_types.job_export_type.job_export_type import ExportJob
 from users.auth_exceptions.user_exceptions import (
     EmailNotSentError,
     UserNotFoundError,
@@ -21,6 +24,7 @@ from users.export_types.request_data_types.update_user_profile import (
 )
 from users.export_types.request_data_types.verify_otp import VerifyOTPRequestType
 from users.export_types.user_types.export_user import ExportUserList, ExportUser
+from users.export_types.request_data_types.search_user import SearchUserRequestType
 from users.models.user_models.user import User
 from users.serializers.user_serializer import UserSerializer
 from users.services.definitions import DEFAULT_VERIFICATION_MESSAGE
@@ -33,6 +37,9 @@ from users.services.helpers import (
     validate_dob,
     validate_phone,
     validate_password_for_password_change,
+    validate_email_format,
+    get_applied_jobs,
+    get_created_jobs,
 )
 from users.services.otp_services.otp_services import OTPServices
 from users.services.token_services.token_generator import TokenGenerator
@@ -54,6 +61,44 @@ class UserServices:
             return all_user_details
         else:
             return None
+
+    @staticmethod
+    def get_searched_users(
+        request_data: SearchUserRequestType, uid: str
+    ) -> Optional[list]:
+        try:
+            users = None
+            keyword = request_data.keyword.strip()
+            if validate_email_format(keyword):
+                users = User.objects.filter(email=keyword)[:10]
+            else:
+                keywords = keyword.split(" ")
+                query = Q()
+                for keyword in keywords:
+                    query |= Q(fname__icontains=keyword) | Q(lname__icontains=keyword)
+
+                users = User.objects.filter(query)[:10]
+
+            if users and users.exists():
+                all_users = []
+                for user in users:
+                    if str(user.id) != uid:
+                        user = ExportUser(**user.model_to_dict())
+                        user.created_jobs = get_applied_jobs(user)
+                        user.applied_jobs = get_created_jobs(user)
+                        all_users.append(user)
+
+                if all_users and len(all_users) > 0:
+                    return (
+                        ExportUserList(user_list=all_users)
+                        .model_dump()
+                        .get("user_list")
+                    )
+            else:
+                return None
+
+        except ObjectDoesNotExist:
+            raise UserNotFoundError()
 
     @staticmethod
     def create_new_user_service(request_data: CreateUserRequestType) -> dict:
@@ -179,8 +224,64 @@ class UserServices:
     @staticmethod
     def get_user_details(uid: str) -> ExportUser:
         user = User.objects.get(id=uid)
-        user_details = ExportUser(with_id=True, **user.model_to_dict())
+
+        # created_jobs = [ExportJob(**job.__dict__) for job in get_created_jobs(user)]
+        # applied_jobs = [ExportJob(**job.__dict__) for job in get_applied_jobs(user)]
+
+        created_jobs = []
+        for job in get_created_jobs(user):
+            # Ensure the 'posted_by' field is properly populated with ExportUser
+            job_data = job.__dict__
+            job_data["posted_by"] = (
+                ExportUser(**job_data["posted_by"].__dict__)
+                if job_data.get("posted_by")
+                else None
+            )
+            created_jobs.append(ExportJob(**job_data))
+
+        applied_jobs = []
+        for job in get_applied_jobs(user):
+            # Same for applied jobs
+            job_data = job.__dict__
+            job_data["posted_by"] = (
+                ExportUser(**job_data["posted_by"].__dict__)
+                if job_data.get("posted_by")
+                else None
+            )
+            applied_jobs.append(ExportJob(**job_data))
+
+        user_data = user.model_to_dict()
+        user_data.update(
+            {
+                "applied_jobs": applied_jobs,
+                "created_jobs": created_jobs,
+            }
+        )
+
+        user_data["posted_by"] = (
+            ExportUser(**user_data["posted_by"].__dict__)
+            if user_data.get("posted_by")
+            else None
+        )
+
+        # Return the ExportUser with updated jobs
+        user_details = ExportUser(with_id=True, **user_data)
+
         return user_details
+
+    @staticmethod
+    def get_user_details_by_id(requested_user_id: str) -> ExportUser:
+        try:
+            requested_user = User.objects.get(id=requested_user_id)
+
+            requested_user.created_jobs = get_applied_jobs(requested_user)
+            requested_user.applied_jobs = get_created_jobs(requested_user)
+
+            requested_user = ExportUser(**requested_user.model_to_dict())
+
+            return requested_user
+        except ObjectDoesNotExist:
+            raise UserNotFoundError()
 
     @staticmethod
     def verify_user_with_otp(request_data: VerifyOTPRequestType):

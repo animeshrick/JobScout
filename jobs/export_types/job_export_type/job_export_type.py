@@ -1,18 +1,19 @@
 import datetime
 import typing
+from typing import TYPE_CHECKING
 from typing import Optional
 from uuid import UUID
 
 from _decimal import Decimal
 from pydantic import BaseModel
 
-from users.export_types.user_types.export_user import ExportUser
-from users.models.user_models.user import User
+if TYPE_CHECKING:
+    from users.export_types.user_types.export_user import ExportUser
 
 
 class ExportJob(BaseModel):
     id: Optional[UUID]
-    posted_by: ExportUser
+    posted_by: Optional["ExportUser"]
     title: str
     company: str
     salary: Decimal
@@ -33,8 +34,10 @@ class ExportJob(BaseModel):
     updated_at: datetime.datetime
 
     def __init__(self, with_id: bool = True, **kwargs):
-        if "posted_by" in kwargs and isinstance(kwargs["posted_by"], User):
-            kwargs["posted_by"] = ExportUser(**kwargs["posted_by"].model_to_dict())
+        from users.export_types.user_types.export_user import ExportUser  # Local import
+
+        if "posted_by" in kwargs and isinstance(kwargs["posted_by"], dict):
+            kwargs["posted_by"] = ExportUser(**kwargs["posted_by"])
         if not with_id:
             kwargs["id"] = None
         super().__init__(**kwargs)

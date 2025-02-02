@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 
 import uuid
+from typing import List
 
 from django.core.exceptions import ObjectDoesNotExist
 from dotenv import load_dotenv
@@ -10,6 +11,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from dateutil.parser import parse
 
+from jobs.models.job_model import Job
 from users.auth_exceptions.user_exceptions import (
     UserNotAuthenticatedError,
     UserNotFoundError,
@@ -234,3 +236,23 @@ def validate_pin(pincode: str) -> ValidationResult:
         return ValidationResult(
             is_validated=False, error="Invalid PIN code. It should be a 6-digit number."
         )
+
+
+def get_applied_jobs(user: User) -> List[Job]:
+    """
+    Fetch the list of jobs the user has applied for.
+    """
+    # Assuming there's a relationship between User and Job (e.g., through an Application model)
+    # Example: Application model has user_id and job_id fields
+    # applied_jobs = Job.objects.filter(application__user_id=user.id)
+    # return list(applied_jobs)
+    return []
+
+
+def get_created_jobs(user: User) -> List[Job]:
+    """
+    Fetch the list of jobs the user has created.
+    """
+    # Assuming Job has a posted_by field that references the User who created the job
+    created_jobs = Job.objects.filter(posted_by=user)
+    return list(created_jobs)

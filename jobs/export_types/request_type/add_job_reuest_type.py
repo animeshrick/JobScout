@@ -4,7 +4,7 @@ from _decimal import Decimal
 from pydantic import BaseModel
 
 
-class AddJobRequestType(BaseModel):
+class AddUpdateJobRequestType(BaseModel):
     title: str
     salary: Decimal
     company: str
