@@ -42,6 +42,23 @@ class JobServices:
             return None
 
     @staticmethod
+    def get_all_created_jobs(uid: str) -> Optional[list]:
+        try:
+            jobs = Job.objects.filter(posted_by_id=uid)
+        except Exception:
+            raise DatabaseError()
+        if jobs.exists():
+            all_jobs = ExportJobList(
+                jobs=[
+                    ExportJob(**job.model_to_dict(), with_posted_by=False)
+                    for job in jobs
+                ]
+            )
+            return all_jobs.model_dump().get("jobs")
+        else:
+            return None
+
+    @staticmethod
     def update_job(uid: str, request_data: UpdateJobRequestType) -> ExportJob:
         try:
             job = Job.objects.get(id=request_data.job_id)
