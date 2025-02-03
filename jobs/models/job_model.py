@@ -14,8 +14,8 @@ class Job(GenericBaseModel):
 
     title = models.CharField(max_length=255)
     company = models.CharField(max_length=255)
-    locations = models.JSONField(default=list)
-    skills = models.JSONField(default=list)
+    locations = models.CharField(max_length=255)
+    skills = models.CharField(max_length=255)
     salary = models.DecimalField(max_digits=10, decimal_places=2)
 
     experience = models.CharField(max_length=255, null=True, blank=True)
@@ -33,6 +33,7 @@ class Job(GenericBaseModel):
     )
 
     description = models.TextField()
+    jd = models.CharField(max_length=500, default="JD", null=True, blank=True)
 
     status = models.CharField(
         max_length=10, choices=JOB_STATUS, default="start", null=False, blank=False
