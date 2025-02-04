@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework_simplejwt.exceptions import TokenError
 from jobs.job_services.job_services import JobServices
 from users.services.handlers.exception_handlers import ExceptionHandler
 from users.services.helpers import decode_jwt_token, validate_user_uid
@@ -24,5 +24,7 @@ class GetAllCreatedJobsView(APIView):
                     status=status.HTTP_200_OK,
                     content_type="application/json",
                 )
+            else:
+                raise TokenError()
         except Exception as e:
             return ExceptionHandler().handle_exception(e)

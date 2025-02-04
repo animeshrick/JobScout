@@ -3,6 +3,7 @@ from typing import Optional
 from psycopg2 import DatabaseError
 
 from jobs.export_types.job_export_type.job_export_type import ExportJob, ExportJobList
+from jobs.export_types.request_type.get_job_request_type import GetJobRequestType
 from jobs.export_types.request_type.update_job_request_type import UpdateJobRequestType
 from jobs.job_exceptions.job_exceptions import (
     JobNotCreatedError,
@@ -10,13 +11,13 @@ from jobs.job_exceptions.job_exceptions import (
     JobPermissionError,
 )
 from jobs.models.job_model import Job
-from jobs.export_types.request_type.add_job_request_type import AddobRequestType
+from jobs.export_types.request_type.add_job_request_type import AddJobRequestType
 from jobs.serializers.job_serializer import JobSerializer
 
 
 class JobServices:
     @staticmethod
-    def add_job_service(request_data: AddobRequestType, uid: str) -> dict:
+    def add_job_service(request_data: AddJobRequestType, uid: str) -> dict:
         data = {
             "request_data": request_data.model_dump(),
             "uid": uid,
@@ -150,3 +151,12 @@ class JobServices:
 
         job.save()
         return ExportJob(**job.model_to_dict())
+
+    @staticmethod
+    def get_jobs_by_id(request_data: GetJobRequestType) -> ExportJob:
+        try:
+            job = Job.objects.get(id=request_data.job_id)
+            if job:
+                return ExportJob(**job.model_to_dict())
+        except Exception:
+            raise JobNotFoundError()

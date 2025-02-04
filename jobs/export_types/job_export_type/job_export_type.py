@@ -1,6 +1,6 @@
 import datetime
-import typing
-from typing import Optional
+import json
+from typing import Optional, List
 from uuid import UUID
 
 from _decimal import Decimal
@@ -15,8 +15,8 @@ class ExportJob(BaseModel):
     title: str
     company: str
     salary: Decimal
-    locations: typing.List[str]
-    skills: typing.List[str]
+    locations: List[str]
+    skills: List[str]
 
     experience: Optional[str]
     notice_period: Optional[str]
@@ -34,6 +34,18 @@ class ExportJob(BaseModel):
 
     def __init__(self, with_id: bool = True, with_posted_by: bool = True, **kwargs):
 
+        if isinstance(kwargs.get("locations"), str):
+            try:
+                kwargs["locations"] = json.loads(kwargs["locations"])
+            except json.JSONDecodeError:
+                raise ValueError("Invalid format for locations. Expected a list.")
+
+        if isinstance(kwargs.get("skills"), str):
+            try:
+                kwargs["skills"] = json.loads(kwargs["skills"])
+            except json.JSONDecodeError:
+                raise ValueError("Invalid format for skills. Expected a list.")
+
         if "posted_by" in kwargs:
             kwargs["posted_by"] = (
                 PostedByUser(**kwargs["posted_by"].model_to_dict())
@@ -46,4 +58,4 @@ class ExportJob(BaseModel):
 
 
 class ExportJobList(BaseModel):
-    jobs: typing.List[ExportJob]
+    jobs: List[ExportJob]
