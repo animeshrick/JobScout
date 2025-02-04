@@ -1,8 +1,9 @@
-from typing import Optional
+from typing import Optional, List, Any
 
 from psycopg2 import DatabaseError
 
 from jobs.export_types.job_export_type.job_export_type import ExportJob, ExportJobList
+from jobs.export_types.request_type.filter_job_request_type import FilterJobsRequestType
 from jobs.export_types.request_type.get_job_request_type import GetJobRequestType
 from jobs.export_types.request_type.update_job_request_type import UpdateJobRequestType
 from jobs.job_exceptions.job_exceptions import (
@@ -71,81 +72,81 @@ class JobServices:
             raise JobPermissionError()
 
         if (
-            request_data.locations
-            and isinstance(request_data.locations, list)
-            and request_data.locations != job.locations
+                request_data.locations
+                and isinstance(request_data.locations, list)
+                and request_data.locations != job.locations
         ):
             job.locations = request_data.locations
 
             # Update skills if provided and valid
         if (
-            request_data.skills
-            and isinstance(request_data.skills, list)
-            and request_data.skills != job.skills
+                request_data.skills
+                and isinstance(request_data.skills, list)
+                and request_data.skills != job.skills
         ):
             job.skills = request_data.skills
 
             # Update experience if provided and valid
         if (
-            request_data.experience is not None
-            and isinstance(request_data.experience, str)
-            and request_data.experience != job.experience
+                request_data.experience is not None
+                and isinstance(request_data.experience, str)
+                and request_data.experience != job.experience
         ):
             job.experience = request_data.experience
 
             # Update notice_period if provided and valid
         if (
-            request_data.notice_period is not None
-            and isinstance(request_data.notice_period, str)
-            and request_data.notice_period != job.notice_period
+                request_data.notice_period is not None
+                and isinstance(request_data.notice_period, str)
+                and request_data.notice_period != job.notice_period
         ):
             job.notice_period = request_data.notice_period
 
             # Update vacancy if provided and valid
         if (
-            request_data.vacancy is not None
-            and isinstance(request_data.vacancy, int)
-            and request_data.vacancy != job.vacancy
+                request_data.vacancy is not None
+                and isinstance(request_data.vacancy, int)
+                and request_data.vacancy != job.vacancy
         ):
             job.vacancy = request_data.vacancy
 
             # Update good_to_have if provided and valid
         if (
-            request_data.good_to_have is not None
-            and isinstance(request_data.good_to_have, str)
-            and request_data.good_to_have != job.good_to_have
+                request_data.good_to_have is not None
+                and isinstance(request_data.good_to_have, str)
+                and request_data.good_to_have != job.good_to_have
         ):
             job.good_to_have = request_data.good_to_have
 
             # Update industry_type if provided and valid
         if (
-            request_data.industry_type is not None
-            and isinstance(request_data.industry_type, str)
-            and request_data.industry_type != job.industry_type
+                request_data.industry_type is not None
+                and isinstance(request_data.industry_type, str)
+                and request_data.industry_type != job.industry_type
         ):
             job.industry_type = request_data.industry_type
 
             # Update employment_type if provided and valid
         if (
-            request_data.employment_type is not None
-            and isinstance(request_data.employment_type, str)
-            and request_data.employment_type != job.employment_type
+                request_data.employment_type is not None
+                and isinstance(request_data.employment_type, str)
+                and request_data.employment_type != job.employment_type
         ):
             job.employment_type = request_data.employment_type
 
             # Update department if provided and valid
         if (
-            request_data.department is not None
-            and isinstance(request_data.department, str)
-            and request_data.department != job.department
+                request_data.department is not None
+                and isinstance(request_data.department, str)
+                and request_data.department != job.department
         ):
             job.department = request_data.department
 
             # Update about_company if provided and valid
         if (
-            request_data.about_company is not None
-            and isinstance(request_data.about_company, str)
-            and request_data.about_company != job.about_company
+                request_data.about_company is not None
+                and isinstance(request_data.about_company, str)
+                and request_data.about_company != job.about_company
         ):
             job.about_company = request_data.about_company
 
@@ -158,5 +159,39 @@ class JobServices:
             job = Job.objects.get(id=request_data.job_id)
             if job:
                 return ExportJob(**job.model_to_dict())
+        except Exception:
+            raise JobNotFoundError()
+
+    @staticmethod
+    def filter_jobs(request_data: FilterJobsRequestType) -> ExportJobList | list[Any]:
+        try:
+            keyword: str = request_data.keyword
+            start_date: str = request_data.start_date
+            end_date: str = request_data.end_date
+            locations: list = request_data.locations
+            skills: list = request_data.skills
+
+            jobs = Job.objects.all()
+
+            if keyword:
+                jobs = jobs.filter(title__icontains=request_data.keyword)
+
+            if start_date and end_date:
+                jobs = jobs.filter(posted_date__range=[request_data.start_date, request_data.end_date])
+
+            if locations:
+                # jobs = jobs.filter(locations__overlap=request_data.locations)
+                jobs = jobs.filter(locations__icontains=locations[0])
+
+            if skills:
+                jobs = jobs.filter(skills__overlap=request_data.skills)
+
+            if jobs.exists():
+                filtered_jobs = ExportJobList(
+                    jobs=[ExportJob(**job.model_to_dict()) for job in jobs]
+                )
+                return filtered_jobs
+            else:
+                return []
         except Exception:
             raise JobNotFoundError()
