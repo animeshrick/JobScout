@@ -149,7 +149,7 @@ def validate_password(password: str) -> ValidationResult:
 
 
 def validate_password_for_password_change(
-        password1: str, password2: str
+    password1: str, password2: str
 ) -> ValidationResult:
     if password1 and password2:
         if len(password1) >= 6 and len(password2) >= 6:
@@ -171,9 +171,9 @@ def validate_password_for_password_change(
 
 def decode_jwt_token(request) -> str:
     if (
-            "Authorization" not in request.headers
-            or not request.headers.get("Authorization")
-            or not isinstance(request.headers.get("Authorization"), str)
+        "Authorization" not in request.headers
+        or not request.headers.get("Authorization")
+        or not isinstance(request.headers.get("Authorization"), str)
     ):
         raise UserNotAuthenticatedError()
     token = request.headers.get("Authorization", "").split(" ")[1]
@@ -260,7 +260,7 @@ def get_created_jobs(user: User) -> List[Job]:
 
 def format_date(date: str) -> str:
     # Check if the string contains 'T' (indicating a time part)
-    if 'T' in date:
+    if "T" in date:
         # If it includes time, parse with time and timezone
         dt = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
     else:
@@ -272,4 +272,3 @@ def format_date(date: str) -> str:
 
     print(formatted_date)
     return formatted_date
-
