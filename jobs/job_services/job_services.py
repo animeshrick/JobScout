@@ -176,7 +176,7 @@ class JobServices:
         locations: list = request_data.locations
         skills: list = request_data.skills
 
-        jobs = Job.objects.all()
+        jobs = Job.objects.filter(status="start")
 
         query = Q()
         if keyword:
@@ -184,6 +184,7 @@ class JobServices:
                     Q(title__icontains=keyword)
                     | Q(description__icontains=keyword)
                     | Q(company__icontains=keyword)
+                    | Q(jd__icontains=keyword)
             )
 
             keyword_list = keyword.split()
