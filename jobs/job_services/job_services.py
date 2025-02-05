@@ -1,5 +1,7 @@
-from typing import Optional, List, Any
+from datetime import datetime
+from typing import Optional, Any
 
+from django.db.models import Q
 from psycopg2 import DatabaseError
 
 from jobs.export_types.job_export_type.job_export_type import ExportJob, ExportJobList
@@ -14,6 +16,7 @@ from jobs.job_exceptions.job_exceptions import (
 from jobs.models.job_model import Job
 from jobs.export_types.request_type.add_job_request_type import AddJobRequestType
 from jobs.serializers.job_serializer import JobSerializer
+from users.services.helpers import format_date
 
 
 class JobServices:
@@ -162,36 +165,65 @@ class JobServices:
         except Exception:
             raise JobNotFoundError()
 
+    from django.db.models import Q
+
     @staticmethod
     def filter_jobs(request_data: FilterJobsRequestType) -> ExportJobList | list[Any]:
-        try:
-            keyword: str = request_data.keyword
-            start_date: str = request_data.start_date
-            end_date: str = request_data.end_date
-            locations: list = request_data.locations
-            skills: list = request_data.skills
+        # try:
+        keyword: str = request_data.keyword
+        start_date: str = request_data.start_date
+        end_date: str = request_data.end_date
+        locations: list = request_data.locations
+        skills: list = request_data.skills
 
-            jobs = Job.objects.all()
+        jobs = Job.objects.all()
 
-            if keyword:
-                jobs = jobs.filter(title__icontains=request_data.keyword)
+        query = Q()
+        if keyword:
+            query |= (
+                    Q(title__icontains=keyword)
+                    | Q(description__icontains=keyword)
+                    | Q(company__icontains=keyword)
+            )
 
-            if start_date and end_date:
-                jobs = jobs.filter(posted_date__range=[request_data.start_date, request_data.end_date])
-
-            if locations:
-                # jobs = jobs.filter(locations__overlap=request_data.locations)
-                jobs = jobs.filter(locations__icontains=locations[0])
-
-            if skills:
-                jobs = jobs.filter(skills__overlap=request_data.skills)
-
-            if jobs.exists():
-                filtered_jobs = ExportJobList(
-                    jobs=[ExportJob(**job.model_to_dict()) for job in jobs]
+            keyword_list = keyword.split()
+            for word in keyword_list:
+                query |= (
+                        Q(title__icontains=word)
+                        | Q(description__icontains=word)
+                        | Q(company__icontains=word)
                 )
-                return filtered_jobs
-            else:
-                return []
-        except Exception:
+
+            jobs = jobs.filter(query)
+
+        if start_date and not end_date:
+            raise ValueError("Both start_date and end_date must be provided.")
+
+        if start_date and end_date:
+            start_date = format_date(start_date)
+            end_date = format_date(end_date)
+
+            jobs = jobs.filter(created_at__date__range=[start_date, end_date])
+
+        if locations:
+            for loc in locations:
+                query |= Q(locations__icontains=loc)
+            jobs = jobs.filter(query)
+
+        if skills:
+            for skill in skills:
+                query |= Q(skills__icontains=skill)
+            jobs = jobs.filter(query)
+
+        jobs = jobs.order_by("-updated_at")
+
+        if jobs.exists():
+            get_jobs = ExportJobList(
+                jobs=[ExportJob(**job.model_to_dict()) for job in jobs]
+            )
+            return get_jobs.model_dump().get("jobs")
+        else:
             raise JobNotFoundError()
+
+    # except Exception:
+    #     raise JobNotFoundError()

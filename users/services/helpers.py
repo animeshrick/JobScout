@@ -149,7 +149,7 @@ def validate_password(password: str) -> ValidationResult:
 
 
 def validate_password_for_password_change(
-    password1: str, password2: str
+        password1: str, password2: str
 ) -> ValidationResult:
     if password1 and password2:
         if len(password1) >= 6 and len(password2) >= 6:
@@ -171,9 +171,9 @@ def validate_password_for_password_change(
 
 def decode_jwt_token(request) -> str:
     if (
-        "Authorization" not in request.headers
-        or not request.headers.get("Authorization")
-        or not isinstance(request.headers.get("Authorization"), str)
+            "Authorization" not in request.headers
+            or not request.headers.get("Authorization")
+            or not isinstance(request.headers.get("Authorization"), str)
     ):
         raise UserNotAuthenticatedError()
     token = request.headers.get("Authorization", "").split(" ")[1]
@@ -256,3 +256,20 @@ def get_created_jobs(user: User) -> List[Job]:
     # Assuming Job has a posted_by field that references the User who created the job
     created_jobs = Job.objects.filter(posted_by=user)
     return list(created_jobs)
+
+
+def format_date(date: str) -> str:
+    # Check if the string contains 'T' (indicating a time part)
+    if 'T' in date:
+        # If it includes time, parse with time and timezone
+        dt = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ")
+    else:
+        # If it doesn't include time, parse only the date part
+        dt = datetime.strptime(date, "%Y-%m-%d")
+
+    # Format the datetime object to just the date part
+    formatted_date = dt.strftime("%Y-%m-%d")
+
+    print(formatted_date)
+    return formatted_date
+
