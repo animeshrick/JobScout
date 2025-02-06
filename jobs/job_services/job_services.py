@@ -39,7 +39,13 @@ class JobServices:
             raise DatabaseError()
         if jobs:
             all_jobs = ExportJobList(
-                jobs=[ExportJob(**job.model_to_dict()) for job in jobs]
+                jobs=[
+                    ExportJob(
+                        **job.model_to_dict(),
+                        applicants=job.applicants.all(),
+                    )
+                    for job in jobs
+                ]
             )
             return all_jobs.model_dump().get("jobs")
         else:
@@ -54,7 +60,33 @@ class JobServices:
         if jobs.exists():
             all_jobs = ExportJobList(
                 jobs=[
-                    ExportJob(**job.model_to_dict(), with_posted_by=False)
+                    ExportJob(
+                        **job.model_to_dict(),
+                        applicants=job.applicants.all(),
+                        with_posted_by=False,
+                    )
+                    for job in jobs
+                ]
+            )
+            return all_jobs.model_dump().get("jobs")
+        else:
+            return None
+
+    @staticmethod
+    def get_all_applied_jobs(uid: str) -> Optional[list]:
+        try:
+            jobs = Job.objects.filter(applicants__id=uid)
+        except Exception:
+            raise DatabaseError()
+        if jobs.exists():
+            all_jobs = ExportJobList(
+                jobs=[
+                    ExportJob(
+                        **job.model_to_dict(),
+                        applicants=job.applicants.all(),
+                        with_posted_by=False,
+                        only_with_applicant_count=True,
+                    )
                     for job in jobs
                 ]
             )
@@ -160,11 +192,13 @@ class JobServices:
         try:
             job = Job.objects.get(id=request_data.job_id)
             if job:
-                return ExportJob(**job.model_to_dict())
+                return ExportJob(
+                    **job.model_to_dict(),
+                    applicants=job.applicants.all(),
+                    only_with_applicant_count=True,
+                )
         except Exception:
             raise JobNotFoundError()
-
-    from django.db.models import Q
 
     @staticmethod
     def filter_jobs(request_data: FilterJobsRequestType) -> ExportJobList | list[Any]:
@@ -219,7 +253,14 @@ class JobServices:
 
         if jobs.exists():
             get_jobs = ExportJobList(
-                jobs=[ExportJob(**job.model_to_dict()) for job in jobs]
+                jobs=[
+                    ExportJob(
+                        **job.model_to_dict(),
+                        applicants=job.applicants.all(),
+                        only_with_applicant_count=True,
+                    )
+                    for job in jobs
+                ]
             )
             return get_jobs.model_dump().get("jobs")
         else:

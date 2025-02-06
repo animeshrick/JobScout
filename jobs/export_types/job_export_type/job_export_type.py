@@ -6,6 +6,7 @@ from uuid import UUID
 from _decimal import Decimal
 from pydantic import BaseModel
 
+from jobs.export_types.job_export_type.export_job_applicant import ExportApplicant
 from users.export_types.user_types.posted_by_user import PostedByUser
 
 
@@ -29,10 +30,19 @@ class ExportJob(BaseModel):
     status: Optional[str]
     jd: Optional[str]
 
+    applicants: Optional[List[ExportApplicant]] = []
+    applicants_number: Optional[int] = None
+
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
-    def __init__(self, with_id: bool = True, with_posted_by: bool = True, **kwargs):
+    def __init__(
+        self,
+        with_id: bool = True,
+        with_posted_by: bool = True,
+        only_with_applicant_count: bool = False,
+        **kwargs
+    ):
 
         if isinstance(kwargs.get("locations"), str):
             try:
@@ -52,6 +62,18 @@ class ExportJob(BaseModel):
                 if with_posted_by
                 else None
             )
+
+        if "applicants" in kwargs:
+            applicant_objects = kwargs["applicants"]
+            if not only_with_applicant_count:
+                kwargs["applicants"] = [
+                    ExportApplicant(user) for user in applicant_objects
+                ]
+                kwargs["applicants_number"] = len(applicant_objects)
+            else:
+                kwargs["applicants"] = []
+                kwargs["applicants_number"] = len(applicant_objects)
+
         if not with_id:
             kwargs["id"] = None
         super().__init__(**kwargs)

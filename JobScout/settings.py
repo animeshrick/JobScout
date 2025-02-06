@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "users",
     "jobs",
     "job_applications",
-    "upload"
+    "upload",
 ]
 
 MIDDLEWARE = [

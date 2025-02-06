@@ -39,5 +39,10 @@ class Job(GenericBaseModel):
         max_length=10, choices=JOB_STATUS, default="start", null=False, blank=False
     )
 
+    applicants = models.ManyToManyField(User, related_name="applied_jobs", blank=True)
+
     def __str__(self):
         return f"{self.title} at {self.company}"
+
+    def get_applicants_list(self):
+        return list(self.applicants.all())
