@@ -51,6 +51,10 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             job: Job = Job.objects.get(id=job_id)
             user: User = User.objects.get(id=user_id)
 
+            if job:
+                job.applicants.add(user)
+                job.save()
+
             if request_data.get("resume"):
                 user.resume = request_data.get("resume")
                 user.save()
