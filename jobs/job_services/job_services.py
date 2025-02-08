@@ -10,7 +10,8 @@ from jobs.export_types.request_type.update_job_request_type import UpdateJobRequ
 from jobs.job_exceptions.job_exceptions import (
     JobNotCreatedError,
     JobNotFoundError,
-    JobPermissionError, JobAlreadyDeletedError,
+    JobPermissionError,
+    JobAlreadyDeletedError,
 )
 from jobs.models.job_model import Job
 from jobs.export_types.request_type.add_job_request_type import AddJobRequestType

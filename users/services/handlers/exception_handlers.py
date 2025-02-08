@@ -12,7 +12,7 @@ from jobs.job_exceptions.job_exceptions import (
     AlreadyCreatedJobError,
     JobNotFoundError,
     JobPermissionError,
-    JobAlreadyDeletedError
+    JobAlreadyDeletedError,
 )
 from users.auth_exceptions.user_exceptions import (
     UserNotFoundError,

@@ -1,5 +1,4 @@
 import datetime
-import json
 from typing import Optional, List
 from uuid import UUID
 
@@ -46,7 +45,9 @@ class ExportJob(BaseModel):
     ):
 
         if isinstance(kwargs.get("locations"), str):
-            kwargs["locations"] = [loc.strip() for loc in kwargs["locations"].split(",")]
+            kwargs["locations"] = [
+                loc.strip() for loc in kwargs["locations"].split(",")
+            ]
 
         if isinstance(kwargs.get("skills"), str):
             kwargs["skills"] = [skill.strip() for skill in kwargs["skills"].split(",")]

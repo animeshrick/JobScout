@@ -13,14 +13,6 @@ class JobAdmin(admin.ModelAdmin):
         "posted_by",
         "created_at",
     )
-    # search_fields = ('title', 'company', 'location')
-    # list_filter = ('company', 'recruiter', 'location')
-    # ordering = ('-posted_at',)
-    # list_editable = ('vacancy', 'company')
-    # date_hierarchy = 'posted_at'
-
-    # Optionally, you can define fields to display in the form view:
-    # fields = ("title", "description", "vacancy", "company", "locations", "salary")
     search_fields = ("company", "locations", "skills", "posted_by")
 
 
