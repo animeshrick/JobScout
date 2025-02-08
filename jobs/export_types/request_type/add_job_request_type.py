@@ -18,5 +18,5 @@ class AddJobRequestType(BaseModel):
     good_to_have: Optional[str] = None
     industry_type: Optional[str] = None
     employment_type: Optional[str] = None
-    about_company: Optional[str] = None
+    description: Optional[str] = None
     department: Optional[str] = None

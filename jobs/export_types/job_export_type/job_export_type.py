@@ -32,6 +32,7 @@ class ExportJob(BaseModel):
 
     applicants: Optional[List[ExportApplicant]] = []
     applicants_number: Optional[int] = None
+    is_deleted: Optional[bool]
 
     created_at: datetime.datetime
     updated_at: datetime.datetime
@@ -45,16 +46,10 @@ class ExportJob(BaseModel):
     ):
 
         if isinstance(kwargs.get("locations"), str):
-            try:
-                kwargs["locations"] = json.loads(kwargs["locations"])
-            except json.JSONDecodeError:
-                raise ValueError("Invalid format for locations. Expected a list.")
+            kwargs["locations"] = [loc.strip() for loc in kwargs["locations"].split(",")]
 
         if isinstance(kwargs.get("skills"), str):
-            try:
-                kwargs["skills"] = json.loads(kwargs["skills"])
-            except json.JSONDecodeError:
-                raise ValueError("Invalid format for skills. Expected a list.")
+            kwargs["skills"] = [skill.strip() for skill in kwargs["skills"].split(",")]
 
         if "posted_by" in kwargs:
             kwargs["posted_by"] = (

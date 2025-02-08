@@ -10,7 +10,7 @@ from jobs.export_types.request_type.update_job_request_type import UpdateJobRequ
 from jobs.job_exceptions.job_exceptions import (
     JobNotCreatedError,
     JobNotFoundError,
-    JobPermissionError,
+    JobPermissionError, JobAlreadyDeletedError,
 )
 from jobs.models.job_model import Job
 from jobs.export_types.request_type.add_job_request_type import AddJobRequestType
@@ -34,7 +34,7 @@ class JobServices:
     @staticmethod
     def get_all_jobs_service() -> Optional[list]:
         try:
-            jobs = Job.objects.all()
+            jobs = Job.objects.filter(is_deleted=False)
         except Exception:
             raise DatabaseError()
         if jobs:
@@ -75,7 +75,7 @@ class JobServices:
     @staticmethod
     def get_all_applied_jobs(uid: str) -> Optional[list]:
         try:
-            jobs = Job.objects.filter(applicants__id=uid)
+            jobs = Job.objects.filter(applicants__id=uid, is_deleted=False)
         except Exception:
             raise DatabaseError()
         if jobs.exists():
@@ -97,7 +97,7 @@ class JobServices:
     @staticmethod
     def update_job(uid: str, request_data: UpdateJobRequestType) -> ExportJob:
         try:
-            job = Job.objects.get(id=request_data.job_id)
+            job = Job.objects.get(id=request_data.job_id, is_deleted=False)
         except Exception:
             raise JobNotFoundError()
 
@@ -190,7 +190,7 @@ class JobServices:
     @staticmethod
     def get_jobs_by_id(request_data: GetJobRequestType) -> ExportJob:
         try:
-            job = Job.objects.get(id=request_data.job_id)
+            job = Job.objects.get(id=request_data.job_id, is_deleted=False)
             if job:
                 return ExportJob(
                     **job.model_to_dict(),
@@ -201,15 +201,37 @@ class JobServices:
             raise JobNotFoundError()
 
     @staticmethod
+    def remove_job_service(request_data: GetJobRequestType, uid: str) -> ExportJob:
+        try:
+            job = Job.objects.get(id=request_data.job_id, posted_by_id=uid)
+        except Exception:
+            raise JobNotFoundError()
+        if job:
+
+            if job.is_deleted:
+                raise JobAlreadyDeletedError()
+
+            if str(job.posted_by.id) != uid:
+                raise JobPermissionError()
+
+            job.is_deleted = True
+            job.save()
+
+            return ExportJob(
+                **job.model_to_dict(),
+                applicants=job.applicants.all(),
+                only_with_applicant_count=True,
+            )
+
+    @staticmethod
     def filter_jobs(request_data: FilterJobsRequestType) -> ExportJobList | list[Any]:
-        # try:
         keyword: str = request_data.keyword
         start_date: str = request_data.start_date
         end_date: str = request_data.end_date
         locations: list = request_data.locations
         skills: list = request_data.skills
 
-        jobs = Job.objects.filter(status="start")
+        jobs = Job.objects.filter(status="start", is_deleted=False)
 
         query = Q()
         if keyword:
@@ -265,6 +287,3 @@ class JobServices:
             return get_jobs.model_dump().get("jobs")
         else:
             raise JobNotFoundError()
-
-    # except Exception:
-    #     raise JobNotFoundError()

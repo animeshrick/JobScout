@@ -108,7 +108,7 @@ class JobSerializer(serializers.ModelSerializer):
                 "industry_type",
                 "department",
                 "employment_type",
-                "about_company",
+                "description",
             ]
 
             for field in optional_fields:

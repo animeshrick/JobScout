@@ -38,3 +38,12 @@ class JobNotFoundError(JobScoutBaseException):
         else:
             super().__init__(msg)
         logging.error(self.msg)
+
+
+class JobAlreadyDeletedError(JobScoutBaseException):
+    def __init__(self, msg: Optional[str] = None):
+        if not msg:
+            self.msg = "The job is already deleted."
+        else:
+            super().__init__(msg)
+        logging.error(self.msg)

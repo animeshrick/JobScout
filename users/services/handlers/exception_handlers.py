@@ -12,6 +12,7 @@ from jobs.job_exceptions.job_exceptions import (
     AlreadyCreatedJobError,
     JobNotFoundError,
     JobPermissionError,
+    JobAlreadyDeletedError
 )
 from users.auth_exceptions.user_exceptions import (
     UserNotFoundError,
@@ -87,6 +88,10 @@ class ExceptionHandler:
             },
             JobPermissionError: {
                 "message": "JobNotFoundError",
+                "status": status.HTTP_400_BAD_REQUEST,
+            },
+            JobAlreadyDeletedError: {
+                "message": "JobAlreadyDeletedError",
                 "status": status.HTTP_400_BAD_REQUEST,
             },
             ValueError: {

@@ -32,8 +32,8 @@ class Job(GenericBaseModel):
         User, on_delete=models.CASCADE, related_name="posted_by", null=True, blank=True
     )
 
-    description = models.TextField()
-    jd = models.CharField(max_length=500, default="JD", null=True, blank=True)
+    description = models.CharField(max_length=1000, null=True, blank=True)
+    jd = models.CharField(max_length=500, null=True, blank=True)
 
     status = models.CharField(
         max_length=10, choices=JOB_STATUS, default="start", null=False, blank=False
@@ -41,8 +41,19 @@ class Job(GenericBaseModel):
 
     applicants = models.ManyToManyField(User, related_name="applied_jobs", blank=True)
 
+    is_deleted = models.BooleanField(default=False)
+
     def __str__(self):
         return f"{self.title} at {self.company}"
+
+    def save(self, *args, **kwargs):
+        if isinstance(self.locations, list):
+            self.locations = ",".join(self.locations)  # Convert list to string
+
+        if isinstance(self.skills, list):
+            self.skills = ",".join(self.skills)  # Convert list to string
+
+        super().save(*args, **kwargs)
 
     def get_applicants_list(self):
         return list(self.applicants.all())
