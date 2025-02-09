@@ -11,7 +11,6 @@ from job_applications.export_types.request_types.get_job_application_request imp
 from job_applications.job_application_services.job_application_service import (
     JobApplicationServices,
 )
-from job_applications.models.job_application_model import JobApplication
 from users.services.handlers.exception_handlers import ExceptionHandler
 from users.services.helpers import decode_jwt_token, validate_user_uid
 

@@ -10,7 +10,8 @@ from job_applications.export_types.request_types.get_job_application_request imp
     GetJobApplicationRequestType,
 )
 from job_applications.job_application_exceptions.job_application_exceptions import (
-    JobApplicationNotCreatedError, JobApplicationNotFoundError,
+    JobApplicationNotCreatedError,
+    JobApplicationNotFoundError,
 )
 from job_applications.models.job_application_model import JobApplication
 from job_applications.serializers.job_application_serializer import (
@@ -22,7 +23,7 @@ from jobs.models.job_model import Job
 class JobApplicationServices:
     @staticmethod
     def add_job_application_service(
-            request_data: AddJobApplicationRequestType, uid: str
+        request_data: AddJobApplicationRequestType, uid: str
     ) -> dict:
         data = {
             "request_data": request_data.model_dump(),
@@ -36,7 +37,7 @@ class JobApplicationServices:
 
     @staticmethod
     def get_job_application_service(
-            request_data: GetJobApplicationRequestType, uid: str
+        request_data: GetJobApplicationRequestType, uid: str
     ) -> dict:
         try:
             job_application: JobApplication = JobApplication.objects.get(
@@ -49,12 +50,15 @@ class JobApplicationServices:
 
     @staticmethod
     def withdraw_job_application_service(
-            request_data: GetJobApplicationRequestType, uid: str
+        request_data: GetJobApplicationRequestType, uid: str
     ) -> dict:
-        job_application = JobApplication.objects.filter(
-            applicant_id=uid,
-            id=request_data.application_id
-        ).filter(Q(status="pending") | Q(status="accepted") | Q(status="rejected")).first()
+        job_application = (
+            JobApplication.objects.filter(
+                applicant_id=uid, id=request_data.application_id
+            )
+            .filter(Q(status="pending") | Q(status="accepted") | Q(status="rejected"))
+            .first()
+        )
 
         if job_application:
             job_application.status = "withdrawn"

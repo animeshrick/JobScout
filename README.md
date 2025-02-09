@@ -1,97 +1,130 @@
-JobScout API
+# JobScout Backend API
 
 JobScout is a simple Job Board API built using Django and Django REST Framework (DRF). This API allows users to manage job postings and applications efficiently. The project follows industrial standards and is hosted on a live database.
 
-Features
+### Features
 
-CRUD operations for job postings
+- CRUD operations for job postings
+- User authentication and token-based authorization
+- API documentation with DRF
+- Hosted on a live database
+- Installation
+- Prerequisites: Python 3.x, Django, Django REST Framework, PostgreSQL (or any preferred database)
+- Setup Instructions
 
-User authentication and token-based authorization
-
-API documentation with DRF
-
-Hosted on a live database
-
-Installation
-
-Prerequisites
-
-Python 3.x
-
-Django
-
-Django REST Framework
-
-PostgreSQL (or any preferred database)
-
-Setup Instructions
-
-# Clone the repository
-git clone https://github.com/your-username/jobscout.git
+## Clone the repository
+git clone https://github.com/animeshrick/JobScout.git
 cd jobscout
 
-# Create a virtual environment
+## Create a virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 
-# Install dependencies
+## Install dependencies
 pip install -r requirements.txt
 
-# Setup environment variables (configure .env file accordingly)
+## Setup environment variables (configure .env file accordingly)
 export DATABASE_URL=your_database_url
 
-# Run migrations
+## Run migrations
 python manage.py migrate
 
-# Create a superuser
+## Create a superuser
 python manage.py createsuperuser
 
-# Start the development server
+## Start the development server
 python manage.py runserver
 
-API Endpoints
+## API Endpoints
 
-Authentication
+---
 
-POST /api/auth/register/ - Register a new user
+### Authentication
 
-POST /api/auth/login/ - Login and obtain an access token
+| Method | Endpoint                       | Description           |
+|--------|--------------------------------|-----------------------|
+| POST   | `/auth/api/v2/create-users`    | Register a new user   |
+| POST   | `/auth/api/v2/sign-in`         | Login and get a token |
+| POST   | `/auth/api/v2/send-otp/`       | Send OTP              |
+| POST   | `/auth/api/v2/verify-otp`      | Verify OTP            |
+| POST   | `/auth/api/v2/update-password` | Update Password       |
+| POST   | `/auth/api/v2/reset-password`  | Reset Password        |
+| POST   | `/auth/api/v2/remove-user`     | Remove User           |
 
-Job Listings
+### Jobs
 
-GET /api/jobs/ - Retrieve all job listings
+| Method | Endpoint                            | Description                    |
+|--------|-------------------------------------|--------------------------------|
+| POST   | `job/api/v2/add-job`                | Register a new Job             |
+| POST   | `job/api/v2/job-info`               | Information about specific job |
+| POST   | `job/api/v2/update-job`             | Update a Job                   |
+| POST   | `job/api/v2/remove-job`             | Remove a Job                   |
+| POST   | `job/api/v2/get-all-applied-jobs`   | Get all applied Jobs           |
+| POST   | `job/api/v2/get-all-created-jobs`   | Get all created Jobs           |
+| POST   | `job/api/v2/job-filter`             | Filter Jobs                    |
+| POST   | `job/api/v2/get-jobs`               | Get all jobs                   |
 
-POST /api/jobs/ - Create a new job (requires authentication)
+### Job Applications
 
-GET /api/jobs/{id}/ - Retrieve a specific job
+| Method | Endpoint                                          | Description              |
+|--------|---------------------------------------------------|--------------------------|
+| POST   | `application/api/v2/create-application`           | Apply for a Job          |
+| POST   | `application/api/v2/get-application`              | Get applied application  |
+| POST   | `application/api/v2/withdraw`                     | Withdraw job application |
 
-PUT /api/jobs/{id}/ - Update a job (requires authentication)
 
-DELETE /api/jobs/{id}/ - Delete a job (requires authentication)
+## Development
 
-Applications
+### Run Tests
 
-GET /api/applications/ - Retrieve all applications (admin only)
+Run the test suite to ensure everything works as expected:
 
-POST /api/jobs/{id}/apply/ - Apply for a job
+```bash
+$ pytest
+```
 
-GET /api/applications/{id}/ - Retrieve a specific application
+### Linting
 
-Deployment
+Ensure code quality by running a Cleaner:
 
-The API is hosted on a live server.
+```bash
+$ clean.bat
+```
 
-Use gunicorn and nginx for production setup.
+---
 
-Configure environment variables for production.
 
-Contributing
+## Folder Structure
 
-Feel free to contribute to the project by opening issues or submitting pull requests.
+```
+.
+├── JobScout/             # Django project folder
+├── users/                # App for user managment
+├── jobs/                 # App for managing expenses
+├── job_applications/     # App for managing friends and friend requests
+├── upload/               # to upload files
+```
 
-License
+---
 
-This project is licensed under the MIT License.
+## Contributing
 
-For further details, refer to the official documentation.
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature-branch`)
+3. Commit your changes (`git commit -m 'Add some feature'`)
+4. Push to the branch (`git push origin feature-branch`)
+5. Open a Pull Request
+
+---
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Acknowledgments
+
+- Thanks to the Django and Django Rest Framework teams for their amazing tools.
+- Special thanks to contributors and testers.
+
 

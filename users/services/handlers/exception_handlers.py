@@ -7,8 +7,11 @@ from rest_framework import status, serializers
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError
 
-from job_applications.job_application_exceptions.job_application_exceptions import JobApplicationNotFoundError, \
-    AlreadyAppliedJobError, JobApplicationNotCreatedError
+from job_applications.job_application_exceptions.job_application_exceptions import (
+    JobApplicationNotFoundError,
+    AlreadyAppliedJobError,
+    JobApplicationNotCreatedError,
+)
 from jobs.job_exceptions.job_exceptions import (
     JobNotCreatedError,
     AlreadyCreatedJobError,
