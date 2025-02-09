@@ -10,6 +10,7 @@ class JobApplication(GenericBaseModel):
         ("pending", "Pending"),
         ("accepted", "Accepted"),
         ("rejected", "Rejected"),
+        ("withdrawn", "Withdrawn"),
     )
 
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="job")

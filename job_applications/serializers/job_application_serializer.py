@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from rest_framework import serializers
 
 from job_applications.job_application_exceptions.job_application_exceptions import (
-    JobApplicationNotCreatedError,
+    JobApplicationNotCreatedError, AlreadyAppliedJobError,
 )
 from job_applications.models.job_application_model import JobApplication
 from jobs.job_exceptions.job_exceptions import JobNotFoundError
@@ -38,6 +38,12 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             job = Job.objects.filter(id=job_id)
             if not job.exists():
                 raise JobNotFoundError()
+
+        job_application = JobApplication.objects.filter(
+            job_id=job_id, applicant_id=uid
+        )
+        if job_application.exists():
+            raise AlreadyAppliedJobError()
 
         return True
 

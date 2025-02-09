@@ -20,3 +20,12 @@ class AlreadyAppliedJobError(JobScoutBaseException):
         else:
             super().__init__(msg)
         logging.error(self.msg)
+
+
+class JobApplicationNotFoundError(JobScoutBaseException):
+    def __init__(self, msg: Optional[str] = None):
+        if not msg:
+            self.msg = "Job application not found or deleted"
+        else:
+            super().__init__(msg)
+        logging.error(self.msg)
