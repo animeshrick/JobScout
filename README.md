@@ -36,7 +36,7 @@ python manage.py createsuperuser
 python manage.py runserver
 
 ## API Endpoints
-
+#### LIVE ENDPOINT: "https://jobscout-k438.onrender.com"
 ---
 
 ### Authentication
