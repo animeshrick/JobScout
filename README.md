@@ -127,4 +127,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - Thanks to the Django and Django Rest Framework teams for their amazing tools.
 - Special thanks to contributors and testers.
 
+---
 
+For any queries, feel free to reach out to job.scout.2025@gmail.com. We’ll get back to you as soon as possible!
