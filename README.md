@@ -35,8 +35,16 @@ python manage.py createsuperuser
 ## Start the development server
 python manage.py runserver
 
+---
+
+#### LIVE ENDPOINT: https://jobscout-k438.onrender.com
+#### API Documents: https://documenter.getpostman.com/view/11672475/2sAYX9oLXJ
+
+
+---
+
 ## API Endpoints
-#### LIVE ENDPOINT: "https://jobscout-k438.onrender.com"
+
 ---
 
 ### Authentication
