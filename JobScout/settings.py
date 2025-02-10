@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
-
+import dj_database_url
 from dotenv import load_dotenv
 
 from users.services.definitions import TRUTH_LIST
@@ -102,6 +102,8 @@ DATABASES = {
         "PORT": os.environ.get("DB_PORT"),
     }
 }
+
+DATABASES["default"] = dj_database_url.parse(os.environ.get("EXTERNAL_DB_URL"))
 
 
 # Password validation
