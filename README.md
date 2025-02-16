@@ -80,6 +80,12 @@ python manage.py runserver
 | POST   | `application/api/v2/get-application`              | Get applied application  |
 | POST   | `application/api/v2/withdraw`                     | Withdraw job application |
 
+### Upload CV & Profile Image
+
+| Method | Endpoint                                          | Description              |
+|--------|---------------------------------------------------|--------------------------|
+| POST   | `upload/api/v2/upload-file`           | Upload Image & CV        |
+
 
 ## Development
 
