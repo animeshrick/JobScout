@@ -19,6 +19,7 @@ from jobs.job_exceptions.job_exceptions import (
     JobPermissionError,
     JobAlreadyDeletedError,
 )
+from upload.upload_exceptions.upload_exceptions import WrongFileFormat, FileNotUploaded
 from users.auth_exceptions.user_exceptions import (
     UserNotFoundError,
     UserAlreadyVerifiedError,
@@ -109,6 +110,14 @@ class ExceptionHandler:
             },
             JobApplicationNotFoundError: {
                 "message": "JobApplicationNotFoundError",
+                "status": status.HTTP_400_BAD_REQUEST,
+            },
+            WrongFileFormat: {
+                "message": "WrongFileFormat",
+                "status": status.HTTP_400_BAD_REQUEST,
+            },
+            FileNotUploaded: {
+                "message": "FileNotUploaded",
                 "status": status.HTTP_400_BAD_REQUEST,
             },
             ValueError: {
